@@ -11,10 +11,9 @@ import javax.websocket.server.PathParam;
  * @Date 2020/5/26 15:50
  */
 @Controller
-public class HelloController {
-    @GetMapping("/hello")
-    public String hello(@PathParam("name") String name, Model model){
-        model.addAttribute("name",name);
-        return "hello";
+public class IndexController {
+    @GetMapping("/")
+    public String hello(){
+        return "index";
     }
 }
