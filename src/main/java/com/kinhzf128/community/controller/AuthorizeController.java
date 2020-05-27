@@ -2,12 +2,18 @@ package com.kinhzf128.community.controller;
 
 import com.kinhzf128.community.dto.AccessTokenDto;
 import com.kinhzf128.community.dto.GithubUser;
+import com.kinhzf128.community.mapper.UserMapper;
+import com.kinhzf128.community.model.User;
 import com.kinhzf128.community.provider.GithubProvide;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 /**
  * @author kinhzf128
@@ -25,15 +31,31 @@ public class AuthorizeController {
     @Value("${github.redirect.uri}")
     private String redirect_uri;
 
-    @ResponseBody
+    @Autowired
+    UserMapper userMapper;
+
     @GetMapping("/callback")
-    public GithubUser callback(AccessTokenDto accessTokenDto){
+    public String callback(AccessTokenDto accessTokenDto, HttpServletRequest request){
         accessTokenDto.setClient_id(client_id);
         accessTokenDto.setClient_secret(client_secret);
         accessTokenDto.setRedirect_uri(redirect_uri);
         String accessToken = githubProvide.getAccessToken(accessTokenDto);
         GithubUser githubUser = githubProvide.getGithubUser(accessToken);
-        return githubUser;
+        User user=new User();
+        user.setName(githubUser.getName());
+        user.setAccountId(String.valueOf(githubUser.getId()));
+        user.setToken(UUID.randomUUID().toString());
+        user.setGmtCreate(System.currentTimeMillis());
+        user.setGmtModified(user.getGmtCreate());
+        if (githubUser!=null){
+            // 登录成功
+            userMapper.insert(user);
+            request.getSession().setAttribute("user",githubUser);
+            return "redirect:/";
+        }else {
+            // 登录失败
+            return "redirect:/";
+        }
 
     }
 

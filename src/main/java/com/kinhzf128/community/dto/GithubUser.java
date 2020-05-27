@@ -10,6 +10,16 @@ public class GithubUser {
     private String email;
     private String bio;
 
+    @Override
+    public String toString() {
+        return "GithubUser{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", bio='" + bio + '\'' +
+                '}';
+    }
+
     public int getId() {
         return id;
     }
