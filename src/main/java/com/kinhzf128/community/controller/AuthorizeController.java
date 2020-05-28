@@ -12,7 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 /**
@@ -35,7 +37,7 @@ public class AuthorizeController {
     UserMapper userMapper;
 
     @GetMapping("/callback")
-    public String callback(AccessTokenDto accessTokenDto, HttpServletRequest request){
+    public String callback(AccessTokenDto accessTokenDto,HttpServletResponse response){
         accessTokenDto.setClient_id(client_id);
         accessTokenDto.setClient_secret(client_secret);
         accessTokenDto.setRedirect_uri(redirect_uri);
@@ -44,13 +46,15 @@ public class AuthorizeController {
         User user=new User();
         user.setName(githubUser.getName());
         user.setAccountId(String.valueOf(githubUser.getId()));
-        user.setToken(UUID.randomUUID().toString());
         user.setGmtCreate(System.currentTimeMillis());
         user.setGmtModified(user.getGmtCreate());
+        user.setAvatarUrl(githubUser.getAvatarUrl());
+        String token=UUID.randomUUID().toString();
+        user.setToken(token);
         if (githubUser!=null){
             // 登录成功
             userMapper.insert(user);
-            request.getSession().setAttribute("user",githubUser);
+            response.addCookie(new Cookie("token",token));
             return "redirect:/";
         }else {
             // 登录失败
