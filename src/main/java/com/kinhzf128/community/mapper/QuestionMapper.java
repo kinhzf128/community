@@ -17,6 +17,9 @@ public interface QuestionMapper {
     @Insert("insert into question (title,description,gmt_create,gmt_modified,creator,tag) values (#{title},#{description},#{gmtCreate},#{gmtModified},#{creator},#{tag})")
     public void insert(Question question);
 
-    @Select("select * from question")
-    public List<Question> selectAll();
+    @Select("select * from question limit #{limitStart},#{pageCount}")
+    public List<Question> selectAll(int limitStart, int pageCount);
+
+    @Select("select count(*) from question")
+    public int selectCount();
 }

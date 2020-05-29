@@ -1,6 +1,7 @@
 package com.kinhzf128.community.service;
 
 import com.kinhzf128.community.dto.QuestionDto;
+import com.kinhzf128.community.dto.QuestionPageDto;
 import com.kinhzf128.community.mapper.QuestionMapper;
 import com.kinhzf128.community.mapper.UserMapper;
 import com.kinhzf128.community.model.Question;
@@ -24,9 +25,17 @@ public class QuestionService {
     @Autowired
     QuestionMapper questionMapper;
 
-
-    public List<QuestionDto> selectAll(){
-        List<Question> questions = questionMapper.selectAll();
+    /**
+    * @author kinhzf128
+    * @date 2020/5/29 14:27
+    * @param [page, pageCount]
+    * @return java.util.List<com.kinhzf128.community.dto.QuestionDto>
+     *查询列表
+    */
+    public QuestionPageDto selectAll(QuestionPageDto questionPageDto){
+        int i=questionPageDto.getLimitStart();
+        int i2=questionPageDto.getPageCount();
+        List<Question> questions = questionMapper.selectAll(questionPageDto.getLimitStart(),questionPageDto.getPageCount());
         List<QuestionDto> questionDtoList=new ArrayList<>();
         for (Question question:questions){
             QuestionDto questionDto=new QuestionDto();
@@ -35,6 +44,9 @@ public class QuestionService {
             questionDto.setUser(user);
             questionDtoList.add(questionDto);
         }
-        return questionDtoList;
+        questionPageDto.setCountMax(questionMapper.selectCount());
+        questionPageDto.setQuestionDtos(questionDtoList);
+        return questionPageDto;
     }
+
 }

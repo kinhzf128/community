@@ -1,6 +1,7 @@
 package com.kinhzf128.community.controller;
 
 import com.kinhzf128.community.dto.QuestionDto;
+import com.kinhzf128.community.dto.QuestionPageDto;
 import com.kinhzf128.community.mapper.QuestionMapper;
 import com.kinhzf128.community.mapper.UserMapper;
 import com.kinhzf128.community.model.Question;
@@ -29,8 +30,10 @@ public class IndexController {
     @Autowired
     QuestionService questionService;
 
+
     @GetMapping("/")
-    public String hello(HttpServletRequest request,Model model){
+    public String hello(HttpServletRequest request, Model model, QuestionPageDto questionPageDto){
+        //判断cookies中是否有用户存在
         Cookie[] cookies = request.getCookies();
         if (cookies!=null){
             for(Cookie cookie:cookies){
@@ -43,8 +46,16 @@ public class IndexController {
                 }
             }
         }
-        List<QuestionDto> questionDtos = questionService.selectAll();
-        model.addAttribute("questions",questionDtos);
+        //判断是否有当前页码 赋值
+        if (questionPageDto.getPage()<=0){
+            questionPageDto.setPage(1);
+        }
+        if (questionPageDto.getPageCount()==0){
+            questionPageDto.setPageCount(5);
+        }
+        questionPageDto = questionService.selectAll(questionPageDto);
+
+        model.addAttribute("questions",questionPageDto);
         return "index";
     }
 }
