@@ -1,14 +1,12 @@
-package com.kinhzf128.community.model;
+package com.kinhzf128.community.dto;
 
-import lombok.Data;
-import org.springframework.context.annotation.Description;
+import com.kinhzf128.community.model.User;
 
 /**
  * @author kinhzf128
- * @Date 2020/5/27 20:10
+ * @Date 2020/5/29 10:27
  */
-
-public class Question {
+public class QuestionDto {
     private int id;
     private String title;
     private String Description;
@@ -19,6 +17,7 @@ public class Question {
     private int viewCount;
     private int likeCount;
     private String tag;
+    private User user;
 
     public int getId() {
         return id;
@@ -98,5 +97,13 @@ public class Question {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

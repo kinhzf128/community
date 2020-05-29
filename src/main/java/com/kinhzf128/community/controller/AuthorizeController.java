@@ -1,19 +1,16 @@
 package com.kinhzf128.community.controller;
 
 import com.kinhzf128.community.dto.AccessTokenDto;
-import com.kinhzf128.community.dto.GithubUser;
+import com.kinhzf128.community.dto.GithubUserDto;
 import com.kinhzf128.community.mapper.UserMapper;
 import com.kinhzf128.community.model.User;
 import com.kinhzf128.community.provider.GithubProvide;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
@@ -42,16 +39,16 @@ public class AuthorizeController {
         accessTokenDto.setClient_secret(client_secret);
         accessTokenDto.setRedirect_uri(redirect_uri);
         String accessToken = githubProvide.getAccessToken(accessTokenDto);
-        GithubUser githubUser = githubProvide.getGithubUser(accessToken);
+        GithubUserDto githubUserDto = githubProvide.getGithubUser(accessToken);
         User user=new User();
-        user.setName(githubUser.getName());
-        user.setAccountId(String.valueOf(githubUser.getId()));
+        user.setName(githubUserDto.getName());
+        user.setAccountId(String.valueOf(githubUserDto.getId()));
         user.setGmtCreate(System.currentTimeMillis());
         user.setGmtModified(user.getGmtCreate());
-        user.setAvatarUrl(githubUser.getAvatarUrl());
+        user.setAvatarUrl(githubUserDto.getAvatarUrl());
         String token=UUID.randomUUID().toString();
         user.setToken(token);
-        if (githubUser!=null){
+        if (githubUserDto !=null){
             // 登录成功
             userMapper.insert(user);
             response.addCookie(new Cookie("token",token));
